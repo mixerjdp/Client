@@ -138,7 +138,33 @@ namespace ReverseRatClient
             return null;
         }
 
-                               
+
+        public bool MostrarMdi(Form Padre, Form FormMdi, String Cadena, string vtag)
+        {
+            // Verifica todos los forms hijos para mostrar solo nuevos elementos y no crear repetidos
+            int Contx;
+            bool Encontrado = false;
+
+            for (Contx = 0; Contx < Padre.MdiChildren.Length; Contx++)
+            {
+                if (Padre.MdiChildren[Contx].Name == Cadena && Convert.ToString(Padre.MdiChildren[Contx].Tag) == vtag)
+                {
+                    Encontrado = true;
+                    Padre.MdiChildren[Contx].Activate();
+                    Padre.MdiChildren[Contx].WindowState = FormWindowState.Normal;
+                    Padre.MdiChildren[Contx].Visible = true;
+                }
+            }
+            if (Encontrado == false)
+            {
+                FormMdi.Name = Cadena;
+                FormMdi.MdiParent = Padre;
+                FormMdi.Show();
+            }
+            return Encontrado;
+        }
+
+
 
         public bool MostrarMdiNuevo(Form Padre, Form FormMdi, String Cadena) // Muestra una ventana MDI hija
         {
