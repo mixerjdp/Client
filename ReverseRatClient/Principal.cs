@@ -21,7 +21,7 @@ namespace ReverseRatClient
     ///  ~Agregar y borrar de lista de elementos los conectados y no conectados (detectar el momento en el que se desconectan los sockets)    
     ///  ~Configurar ventanas independientes por conexion (control center)
     ///  ~Shell remoto en ventanas independientes por cada conexión (Usar Menu contextual)
-    /// - Uso de recursos Capacidad de manipular un archivo Ini y agregarlo al servidor  (Configuración archivo ini)
+    /// - Capacidad de manipular un archivo Ini y agregarlo al servidor  (Configuración archivo ini), Uso de recursos
     /// - Pruebas de uso rudo, manejo de errores para conexiones y desconexiones (red)
     /// - Transferencia de archivos en general
     /// - GUI de Cliente   
