@@ -144,15 +144,27 @@ namespace ReverseRatClient
                 }
                 else
                 {
-
+                   // var pnlControlref = new PanelDeControl();
                     for (int ctx = 0; ctx < ActiveForm.MdiChildren.Length; ctx++) // Salida global de comandos
                     {
                         if (Convert.ToString(ActiveForm.MdiChildren[ctx].Tag) == cadenaEvaluar)
                         {
-                            var pnlControl = (PanelDeControl)ActiveForm.MdiChildren[ctx];
+                            var pnlControl = (PanelDeControl)ActiveForm.MdiChildren[ctx];                         
                             pnlControl.textBox1.AppendText(strInput.ToString().Split('|')[0] + "\r\n");
+
+
+                            //Formato al texto de Shell
+                            if (pnlControl.textBox1.Text.Substring(pnlControl.textBox1.Text.Length - 3, 1) == ">")
+                            {
+                                pnlControl.textBox1.Text = pnlControl.textBox1.Text.Substring(0, pnlControl.textBox1.Text.Length - 2);
+                                pnlControl.textBox1.SelectionStart = pnlControl.textBox1.TextLength;
+                                pnlControl.textBox1.ScrollToCaret();                               
+                            }
                         }
                     }
+                   
+
+
                 }
                 Application.DoEvents();
                 strInput.Remove(0, strInput.Length);                
@@ -587,18 +599,24 @@ namespace ReverseRatClient
 
         private void EnviaComandoTexto()
         {
-            EnviarComando(textBox2.Text);
-            // if (textBox2.Text == "exit") Cleanup();
-            //  if (textBox2.Text == "terminate") Cleanup();
+            EnviarComando(textBox2.Text);          
             if (textBox2.Text == @"cls") textBox1.Text = "";
             textBox2.Text = "";
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            CleanupGeneral();
-
-            Environment.Exit(Environment.ExitCode);
+            if (MessageBox.Show(@"¿Desea salir del programa?", @"Salir", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {                
+                e.Cancel = false;
+                CleanupGeneral();
+                Environment.Exit(Environment.ExitCode);
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+            
         }
 
         private void Form1_Load(object sender, EventArgs e) // Basado en hilos
