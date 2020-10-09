@@ -18,11 +18,24 @@ namespace ReverseRatClient
 
         private void button3_Click(object sender, EventArgs e)
         {
-            var pc = (Principal)Msc.DevolverMDI("Principal");
+            ProcesarComandosDos();
+        }
+
+        private void ProcesarComandosDos()
+        {
+            // Envia cualquier conmando DOS
+            var pc = (Principal) Msc.DevolverMDI("Principal");
             pc.EnviarComando(textBox2.Text, Text);
-            
-            if (textBox2.Text == @"cls") textBox1.Text = "";
-            if (textBox2.Text == @"exit") textBox1.AppendText("\r\nSesion finalizada\r\n");
+
+            if (textBox2.Text == @"cls")
+                textBox1.Text = "";
+            if (textBox2.Text == @"exit")
+            {
+                textBox1.AppendText("\r\nSesion finalizada\r\n");
+                ScrollVentanaDos();
+                textBox1.ReadOnly = true;
+            }
+
             textBox2.Text = "";
             AgregarNuevaLinea();
         }
@@ -31,7 +44,8 @@ namespace ReverseRatClient
         {
             
             textBox1.Text = textBox1.Text + "\r\n";
-           
+            ScrollVentanaDos();
+            
         }
 
         private void textBox2_KeyDown(object sender, KeyEventArgs e)
@@ -125,14 +139,17 @@ namespace ReverseRatClient
             if (e.KeyCode != Keys.Return)
                 button2.PerformClick();           
             else
-                button3.PerformClick();
+              ProcesarComandosDos();
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
             //MessageBox.Show(tabControl1.SelectedIndex.ToString());
-            if (tabControl1.SelectedIndex == 1)
-            {
+            
+        }
+
+        void EstablecerFuenteLetraShell()
+        {            
                 try
                 {
                     PrivateFontCollection modernFont = new PrivateFontCollection();
@@ -142,8 +159,7 @@ namespace ReverseRatClient
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                }
-            }
+                }            
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
@@ -171,15 +187,36 @@ namespace ReverseRatClient
 
         private void textBox1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-           
-               
+                          
             if ((e.KeyCode == Keys.Left || e.KeyCode == Keys.Back) && textBox1.Text.Substring(textBox1.SelectionStart - 1, 1) == ">")
                 textBox1.ReadOnly = true;
             else
                 textBox1.ReadOnly = false;
         }
 
-        
+        private void textBox1_Click(object sender, EventArgs e)
+        {
+             ScrollVentanaDos();
+        }
+
+
+        void ScrollVentanaDos()
+        {
+            // Scroll hasta el final de TxtBox de Shell cuando hay intervencion de Mouse
+            textBox1.SelectionStart = textBox1.TextLength;
+            textBox1.ScrollToCaret();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            textBox1.ReadOnly = false;
+            textBox2.Text = "shell";
+            ProcesarComandosDos();
+            EstablecerFuenteLetraShell();
+            tabControl1.SelectTab(tabPage2);
+            textBox1.Focus();
+            ScrollVentanaDos();           
+        }
     }
 
    
