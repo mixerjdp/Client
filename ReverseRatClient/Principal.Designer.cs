@@ -49,11 +49,10 @@ namespace ReverseRatClient
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cerrarServidorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reiniciarServidorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.abrirVentanaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.textBox3 = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
@@ -76,7 +75,7 @@ namespace ReverseRatClient
             this.textBox1.BackColor = System.Drawing.Color.Black;
             this.textBox1.Font = new System.Drawing.Font("Franklin Gothic Demi", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox1.ForeColor = System.Drawing.Color.Gold;
-            this.textBox1.Location = new System.Drawing.Point(12, 120);
+            this.textBox1.Location = new System.Drawing.Point(12, 140);
             this.textBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
@@ -86,7 +85,7 @@ namespace ReverseRatClient
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(75, 244);
+            this.textBox2.Location = new System.Drawing.Point(89, 310);
             this.textBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(488, 24);
@@ -98,10 +97,10 @@ namespace ReverseRatClient
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 437);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 484);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 14, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(740, 25);
+            this.statusStrip1.Size = new System.Drawing.Size(740, 26);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -151,6 +150,7 @@ namespace ReverseRatClient
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.RowHeadersWidth = 51;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Tahoma", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.Navy;
@@ -160,7 +160,7 @@ namespace ReverseRatClient
             this.dataGridView1.RowTemplate.Height = 16;
             this.dataGridView1.RowTemplate.ReadOnly = true;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(675, 68);
+            this.dataGridView1.Size = new System.Drawing.Size(675, 126);
             this.dataGridView1.StandardTab = true;
             this.dataGridView1.TabIndex = 22;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
@@ -171,6 +171,7 @@ namespace ReverseRatClient
             this.IPEquipo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.IPEquipo.FillWeight = 64.48151F;
             this.IPEquipo.HeaderText = "IP Equipo";
+            this.IPEquipo.MinimumWidth = 6;
             this.IPEquipo.Name = "IPEquipo";
             this.IPEquipo.ReadOnly = true;
             // 
@@ -179,6 +180,7 @@ namespace ReverseRatClient
             this.NombrePC.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.NombrePC.FillWeight = 80.60188F;
             this.NombrePC.HeaderText = "Nombre PC/Usuario";
+            this.NombrePC.MinimumWidth = 6;
             this.NombrePC.Name = "NombrePC";
             this.NombrePC.ReadOnly = true;
             // 
@@ -187,6 +189,7 @@ namespace ReverseRatClient
             this.SistemaOperativo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.SistemaOperativo.FillWeight = 80.60188F;
             this.SistemaOperativo.HeaderText = "Sistema operativo";
+            this.SistemaOperativo.MinimumWidth = 6;
             this.SistemaOperativo.Name = "SistemaOperativo";
             this.SistemaOperativo.ReadOnly = true;
             // 
@@ -195,6 +198,7 @@ namespace ReverseRatClient
             this.Mutex.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.Mutex.FillWeight = 80F;
             this.Mutex.HeaderText = "Mutex";
+            this.Mutex.MinimumWidth = 6;
             this.Mutex.Name = "Mutex";
             this.Mutex.ReadOnly = true;
             // 
@@ -203,6 +207,7 @@ namespace ReverseRatClient
             this.HashSocket.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.HashSocket.FillWeight = 80F;
             this.HashSocket.HeaderText = "HashSocket";
+            this.HashSocket.MinimumWidth = 6;
             this.HashSocket.Name = "HashSocket";
             this.HashSocket.ReadOnly = true;
             // 
@@ -212,9 +217,10 @@ namespace ReverseRatClient
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
             this.cerrarServidorToolStripMenuItem,
+            this.reiniciarServidorToolStripMenuItem,
             this.abrirVentanaToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(204, 76);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(204, 100);
             // 
             // toolStripMenuItem1
             // 
@@ -230,6 +236,13 @@ namespace ReverseRatClient
             this.cerrarServidorToolStripMenuItem.Text = "Cerrar servidor";
             this.cerrarServidorToolStripMenuItem.Click += new System.EventHandler(this.cerrarServidorToolStripMenuItem_Click);
             // 
+            // reiniciarServidorToolStripMenuItem
+            // 
+            this.reiniciarServidorToolStripMenuItem.Name = "reiniciarServidorToolStripMenuItem";
+            this.reiniciarServidorToolStripMenuItem.Size = new System.Drawing.Size(203, 24);
+            this.reiniciarServidorToolStripMenuItem.Text = "Reiniciar servidor";
+            this.reiniciarServidorToolStripMenuItem.Click += new System.EventHandler(this.reiniciarServidorToolStripMenuItem_Click);
+            // 
             // abrirVentanaToolStripMenuItem
             // 
             this.abrirVentanaToolStripMenuItem.Name = "abrirVentanaToolStripMenuItem";
@@ -237,37 +250,20 @@ namespace ReverseRatClient
             this.abrirVentanaToolStripMenuItem.Text = "Ventana de control";
             this.abrirVentanaToolStripMenuItem.Click += new System.EventHandler(this.abrirVentanaToolStripMenuItem_Click);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(12, 80);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(95, 25);
-            this.button1.TabIndex = 23;
-            this.button1.Text = "MessageBox";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(113, 80);
+            this.button2.Location = new System.Drawing.Point(498, 437);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(125, 25);
+            this.button2.Size = new System.Drawing.Size(120, 27);
             this.button2.TabIndex = 27;
             this.button2.Text = "Status de socket";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(244, 81);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(443, 24);
-            this.textBox3.TabIndex = 28;
-            // 
             // button3
             // 
             this.button3.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(571, 244);
+            this.button3.Location = new System.Drawing.Point(583, 309);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(116, 24);
             this.button3.TabIndex = 29;
@@ -279,7 +275,7 @@ namespace ReverseRatClient
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(0, 247);
+            this.label1.Location = new System.Drawing.Point(12, 310);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(71, 18);
             this.label1.TabIndex = 30;
@@ -324,6 +320,7 @@ namespace ReverseRatClient
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.ReadOnly = true;
             this.dataGridView2.RowHeadersVisible = false;
+            this.dataGridView2.RowHeadersWidth = 51;
             dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
             dataGridViewCellStyle6.Font = new System.Drawing.Font("Tahoma", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.Navy;
@@ -333,34 +330,37 @@ namespace ReverseRatClient
             this.dataGridView2.RowTemplate.Height = 16;
             this.dataGridView2.RowTemplate.ReadOnly = true;
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(348, 64);
+            this.dataGridView2.Size = new System.Drawing.Size(603, 64);
             this.dataGridView2.StandardTab = true;
             this.dataGridView2.TabIndex = 31;
             // 
             // NombreUsuario
             // 
             this.NombreUsuario.HeaderText = "Usuario";
+            this.NombreUsuario.MinimumWidth = 6;
             this.NombreUsuario.Name = "NombreUsuario";
             this.NombreUsuario.ReadOnly = true;
             // 
             // NombreCanal
             // 
             this.NombreCanal.HeaderText = "Canal";
+            this.NombreCanal.MinimumWidth = 6;
             this.NombreCanal.Name = "NombreCanal";
             this.NombreCanal.ReadOnly = true;
             // 
             // NombreCliente
             // 
             this.NombreCliente.HeaderText = "Cliente";
+            this.NombreCliente.MinimumWidth = 6;
             this.NombreCliente.Name = "NombreCliente";
             this.NombreCliente.ReadOnly = true;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.dataGridView2);
-            this.groupBox1.Location = new System.Drawing.Point(12, 275);
+            this.groupBox1.Location = new System.Drawing.Point(38, 347);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(354, 87);
+            this.groupBox1.Size = new System.Drawing.Size(609, 87);
             this.groupBox1.TabIndex = 32;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Chat";
@@ -369,7 +369,7 @@ namespace ReverseRatClient
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(0, 369);
+            this.label2.Location = new System.Drawing.Point(33, 447);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(126, 18);
             this.label2.TabIndex = 35;
@@ -378,7 +378,7 @@ namespace ReverseRatClient
             // button4
             // 
             this.button4.Font = new System.Drawing.Font("Calibri", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(339, 365);
+            this.button4.Location = new System.Drawing.Point(397, 437);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(95, 28);
             this.button4.TabIndex = 34;
@@ -388,7 +388,7 @@ namespace ReverseRatClient
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(120, 365);
+            this.textBox4.Location = new System.Drawing.Point(165, 441);
             this.textBox4.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(213, 24);
@@ -398,7 +398,7 @@ namespace ReverseRatClient
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(740, 462);
+            this.ClientSize = new System.Drawing.Size(740, 510);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.textBox4);
@@ -406,17 +406,14 @@ namespace ReverseRatClient
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.textBox3);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.button1);
             this.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.MaximizeBox = false;
             this.Name = "Principal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Tag = "MixerClient";
@@ -440,12 +437,10 @@ namespace ReverseRatClient
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem cerrarServidorToolStripMenuItem;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ToolStripMenuItem abrirVentanaToolStripMenuItem;
         private System.Windows.Forms.DataGridViewTextBoxColumn IPEquipo;
@@ -464,6 +459,7 @@ namespace ReverseRatClient
         public System.Windows.Forms.TextBox textBox1;
         public System.Windows.Forms.Button button3;
         public System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.ToolStripMenuItem reiniciarServidorToolStripMenuItem;
     }
 }
 

