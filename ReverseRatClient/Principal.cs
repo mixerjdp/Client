@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Diagnostics;
 //for Streams
 //to run commands concurrently
 //for IPEndPoint
@@ -619,6 +620,7 @@ namespace ReverseRatClient
                         string nickOrigen = ObtenerNickPorHash(sck.GetHashCode().ToString());
                         string mensajeprivado = cadEv.Substring(cadEv.IndexOf(":", 0, StringComparison.Ordinal) + 1);
                         EnviarMensajePrivado(nickOrigen, nickDestino, mensajeprivado);
+                        EnviarComando("280 " + nickDestino, sck);
                         break;
                     case "260": // Solicita cambio de canal
                         int numeroUsuarios = 0;
@@ -648,6 +650,34 @@ namespace ReverseRatClient
                             string formarCadenaCanal = "310 " + canal + ":0:" + DevolverNumUsuariosCanal(canal) + ":" + MaxClientesCanal;
                             EnviarComando(formarCadenaCanal, sck);
                         }
+                        break;
+
+                    case "418": // Peticion de administrador
+                    case "451": // Peticion de moderador, screener o speaker                              
+                        string[] tokens = cadEv.Split(' ');
+                        string nickNameExpulsar = "";
+                        if (tokens.Length > 1)
+                        {
+                            switch (tokens[1].Trim())
+                            {
+                                case "ADMIN":
+                                case "1:":
+                                case "2:":
+                                case "3:":
+                                    string formarCadenaAdm = "413 ";
+                                    EnviarComando(formarCadenaAdm, sck);
+                                    break;
+                                case "KICK":
+                                    nickNameExpulsar = tokens[2].Trim();
+                                    Socket socketExp = ObtenerSckPorNick(nickNameExpulsar);                                    
+                                    string formarCadenaExpulsado = "276 " + nickNameExpulsar;
+                                    EnviarBroadCastAdmin(formarCadenaExpulsado, sck.GetHashCode().ToString(), ObtenerCanalPorHash(socketExp.GetHashCode().ToString()));
+                                    EliminarClienteLista(socketExp);
+                                    socketExp.Close();
+                                    break;
+                            }
+                        }
+                        
                         break;
 
                 }
@@ -682,6 +712,7 @@ namespace ReverseRatClient
             {
                 if (usr.SocketUsr == sck)
                 {
+                  //  MessageBox.Show(usr.NickName);
                     listaUsuariosChat.Remove(usr);
                     break;
                 }
@@ -755,7 +786,12 @@ namespace ReverseRatClient
                     cadenaUsuarios += usr.NickName + ";";
                 }
             }
-            cadenaUsuarios = cadenaUsuarios.Substring(0, cadenaUsuarios.Length - 1);
+            try
+            {
+                cadenaUsuarios = cadenaUsuarios.Substring(0, cadenaUsuarios.Length - 1);
+            }
+            catch (Exception ex)
+            { }
             return canal + ":" + cadenaUsuarios;
         }
 
@@ -781,7 +817,8 @@ namespace ReverseRatClient
         {
             foreach (UsuariosChat usr in listaUsuariosChat)
             {
-                if (usr.SocketUsr.GetHashCode().ToString() == hashActual)
+                string hashUsuario = usr.SocketUsr.GetHashCode().ToString();
+                if (hashUsuario == hashActual)
                 {
                     return usr.CanalActual;
                 }
@@ -803,23 +840,51 @@ namespace ReverseRatClient
             return "Sin Nick";
         }
 
+
+        private Socket ObtenerSckPorNick(string nick)
+        {
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                if (usr.NickName == nick)
+                {
+                    return usr.SocketUsr;
+                }
+            }
+            return null;
+        }
+
         void EnviarBroadCast(string cadena, string hashActual, string canal)
         {
             List<UsuariosChat> lista2 = new List<UsuariosChat>();
             lista2.AddRange(listaUsuariosChat);
             foreach (UsuariosChat usr in lista2)
             {
+                Debug.WriteLine("Recorre>" + usr.NickName  + " Hash: " + usr.SocketUsr.GetHashCode());
                 if (usr.SocketUsr.GetHashCode().ToString() != hashActual && string.Equals(usr.CanalActual, canal, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    EnviarComando(cadena, usr.SocketUsr);                    
+                }
+            }
+        }
+
+        void EnviarBroadCastAdmin(string cadena, string hashActual, string canal)
+        {
+            List<UsuariosChat> lista2 = new List<UsuariosChat>();
+            lista2.AddRange(listaUsuariosChat);
+            foreach (UsuariosChat usr in listaUsuariosChat)
+            {
+                Debug.WriteLine("Recorre>" + usr.NickName + " Hash: " + usr.SocketUsr.GetHashCode());
+                if (string.Equals(usr.CanalActual, canal, StringComparison.CurrentCultureIgnoreCase))
                 {
                     EnviarComando(cadena, usr.SocketUsr);
                 }
             }
         }
 
-       
+
 
         //Envia mensajes publicos usando el 270, 273
-      
+
 
         #endregion
 
