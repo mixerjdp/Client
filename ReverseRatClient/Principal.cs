@@ -84,9 +84,9 @@ namespace ReverseRatClient
                 // Thread nuevo para cada cliente conectado                       
                 _thRunClient = new Thread(RunClient);
                 _thRunClient.Start();              
-            }
-            
+            }            
         }
+
 
         private void RunClient()
         {
@@ -668,7 +668,7 @@ namespace ReverseRatClient
                                     EnviarComando(formarCadenaAdm, sck);
                                     break;
                                 case "KICK":
-                                    nickNameExpulsar = tokens[2].Trim();
+                                    nickNameExpulsar = cadEv.Substring(9, cadEv.Length - 9).Trim();
                                     Socket socketExp = ObtenerSckPorNick(nickNameExpulsar);                                    
                                     string formarCadenaExpulsado = "276 " + nickNameExpulsar;
                                     EnviarBroadCastAdmin(formarCadenaExpulsado, sck.GetHashCode().ToString(), ObtenerCanalPorHash(socketExp.GetHashCode().ToString()));
@@ -840,7 +840,7 @@ namespace ReverseRatClient
             return "Sin Nick";
         }
 
-
+        // Obtener Socket recorriendo la lista de usuarios por nickname
         private Socket ObtenerSckPorNick(string nick)
         {
             foreach (UsuariosChat usr in listaUsuariosChat)
@@ -859,7 +859,7 @@ namespace ReverseRatClient
             lista2.AddRange(listaUsuariosChat);
             foreach (UsuariosChat usr in lista2)
             {
-                Debug.WriteLine("Recorre>" + usr.NickName  + " Hash: " + usr.SocketUsr.GetHashCode());
+                //Debug.WriteLine("Recorre>" + usr.NickName  + " Hash: " + usr.SocketUsr.GetHashCode());
                 if (usr.SocketUsr.GetHashCode().ToString() != hashActual && string.Equals(usr.CanalActual, canal, StringComparison.CurrentCultureIgnoreCase))
                 {
                     EnviarComando(cadena, usr.SocketUsr);                    
@@ -867,6 +867,8 @@ namespace ReverseRatClient
             }
         }
 
+
+        // Igual al enviar broadcast, pero enviando comando tambien al nick propio
         void EnviarBroadCastAdmin(string cadena, string hashActual, string canal)
         {
             List<UsuariosChat> lista2 = new List<UsuariosChat>();
