@@ -8,8 +8,8 @@
     <ProjectGuid>{00DDD52A-67FE-4F38-AC67-02271AB3932F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReverseRatClient</RootNamespace>
-    <AssemblyName>ReverseRatClient</AssemblyName>
+    <RootNamespace>ReverseAppClient</RootNamespace>
+    <AssemblyName>ReverseAppClient</AssemblyName>
     <ApplicationIcon>icon.ICO</ApplicationIcon>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -69,6 +69,8 @@
       <DependentUpon>Principal.cs</DependentUpon>
     </Compile>
     <Compile Include="Miscelanea.cs" />
+    <Compile Include="RemoteMessageParser.cs" />
+    <Compile Include="SocketListenerTransport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UsuariosChat.cs" />
@@ -93,7 +95,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <None Include="bin\Release\VGASquarePx.ttf" />
     <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

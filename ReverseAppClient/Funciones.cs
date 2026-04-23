@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ReverseRatClient
+namespace ReverseAppClient
 {
     class Funciones
     {

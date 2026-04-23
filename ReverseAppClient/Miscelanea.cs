@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
@@ -10,7 +10,7 @@ using System.IO;
 using System.Drawing.Printing;
 using Microsoft.Win32;
 
-namespace ReverseRatClient
+namespace ReverseAppClient
 {
 
     /// <summary>
@@ -29,7 +29,7 @@ namespace ReverseRatClient
     }
 
 
-    public class Miscelanea  // Por Juan José Montserrat Díaz Padilla
+    public class Miscelanea  // Por Juan Josï¿½ Montserrat Dï¿½az Padilla
     {
         /// <summary>
         /// propiedad
@@ -185,7 +185,7 @@ namespace ReverseRatClient
 
         public void ComandoParametros(GroupBox Gbx, SqlCommand Comando)
         {
-            // Asigna automáticamente parámetros de un comando SQL 
+            // Asigna automï¿½ticamente parï¿½metros de un comando SQL 
             string CadTag = "";
       
             foreach (Control Ctr in Gbx.Controls)
@@ -688,7 +688,7 @@ namespace ReverseRatClient
 
 
 
-        public void ManejaTabs(GroupBox Caja) // Pasa al siguiente control del TabIndex mediante la detección del elemento actual en foco
+        public void ManejaTabs(GroupBox Caja) // Pasa al siguiente control del TabIndex mediante la detecciï¿½n del elemento actual en foco
         {
             TextBox Txt = new TextBox();
             RichTextBox Rch = new RichTextBox();
@@ -720,10 +720,10 @@ namespace ReverseRatClient
                 }
             }
 
-            if (ContFoco == 0) // No hay elemento en foco, abandona la función
+            if (ContFoco == 0) // No hay elemento en foco, abandona la funciï¿½n
                 return;
 
-            TxtLim = 999999; // Limite teórico para el máximo de TABS
+            TxtLim = 999999; // Limite teï¿½rico para el mï¿½ximo de TABS
             foreach (Control Ctr in Caja.Controls) // Encontrar siguiente TAB
             {
                 Control Cnt = new Control();
@@ -731,7 +731,7 @@ namespace ReverseRatClient
 
                 if (Cnt.GetType().Name.Trim() != "Label") // NO Etiquetas
                 {
-                    // Validando que debe cumplir con estar activo y visible para ser un tab siguiente válido
+                    // Validando que debe cumplir con estar activo y visible para ser un tab siguiente vï¿½lido
                     if (Cnt.TabIndex > ActualTab && Cnt.Visible == true && Cnt.Enabled == true && Cnt.TabStop == true)
                     {
                         TxtAct = Cnt.TabIndex;
@@ -757,7 +757,7 @@ namespace ReverseRatClient
         }
 
 
-        public void ManejaTabs(Panel Caja) // Pasa al siguiente control del TabIndex mediante la detección del elemento actual en foco
+        public void ManejaTabs(Panel Caja) // Pasa al siguiente control del TabIndex mediante la detecciï¿½n del elemento actual en foco
         {
             TextBox Txt = new TextBox();
             RichTextBox Rch = new RichTextBox();
@@ -789,10 +789,10 @@ namespace ReverseRatClient
                 }
             }
 
-            if (ContFoco == 0) // No hay elemento en foco, abandona la función
+            if (ContFoco == 0) // No hay elemento en foco, abandona la funciï¿½n
                 return;
 
-            TxtLim = 999999; // Limite teórico para el máximo de TABS
+            TxtLim = 999999; // Limite teï¿½rico para el mï¿½ximo de TABS
             foreach (Control Ctr in Caja.Controls) // Encontrar siguiente TAB
             {
                 Control Cnt = new Control();
@@ -800,7 +800,7 @@ namespace ReverseRatClient
 
                 if (Cnt.GetType().Name.Trim() != "Label") // NO Etiquetas
                 {
-                    // Validando que debe cumplir con estar activo y visible para ser un tab siguiente válido
+                    // Validando que debe cumplir con estar activo y visible para ser un tab siguiente vï¿½lido
                     if (Cnt.TabIndex > ActualTab && Cnt.Visible == true && Cnt.Enabled == true && Cnt.TabStop == true)
                     {
                         TxtAct = Cnt.TabIndex;
@@ -832,7 +832,7 @@ namespace ReverseRatClient
             {
                 if (Confirmacion == true)
                 {
-                    if (MessageBox.Show("¿Desea borrar el elemento seleccionado de la lista?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    if (MessageBox.Show("ï¿½Desea borrar el elemento seleccionado de la lista?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
                         Dvw.Rows.Remove(Dvw.Rows[Dvw.SelectedRows[0].Index]);
                     }
@@ -849,14 +849,14 @@ namespace ReverseRatClient
 
 
         public String ObtenerCampo(String Objetivo, String Campo, String Parametro, String Tabla, System.Data.SqlClient.SqlCommand Comando, SqlConnection Conexion)
-        //Función para obtener una cadena referenciando a un campo con determinado parámetro
+        //Funciï¿½n para obtener una cadena referenciando a un campo con determinado parï¿½metro
         {
             SqlDataReader dreader;
             String Valor = "-1";
             if (Conexion.State != System.Data.ConnectionState.Closed)
                 Conexion.Close();
             Conexion.Open();
-            Comando.CommandText = "Select " + Objetivo + " from " + Tabla + " where " + Campo + " = " + "'" + Parametro + "'";  //Máximo valor
+            Comando.CommandText = "Select " + Objetivo + " from " + Tabla + " where " + Campo + " = " + "'" + Parametro + "'";  //Mï¿½ximo valor
             dreader = Comando.ExecuteReader();
             if (dreader.Read())
                 Valor = dreader[0].ToString().Trim();
@@ -873,7 +873,7 @@ namespace ReverseRatClient
             if (Conexion.State != System.Data.ConnectionState.Closed)
                 Conexion.Close();
             Conexion.Open();
-            Comando.CommandText = "Select " + Objetivo + " from " + Tabla + " where " + Campo + " = " + "'" + Parametro + "'" + ParamAdic;  //Máximo valor
+            Comando.CommandText = "Select " + Objetivo + " from " + Tabla + " where " + Campo + " = " + "'" + Parametro + "'" + ParamAdic;  //Mï¿½ximo valor
             dreader = Comando.ExecuteReader();
             if (dreader.Read())
                 Valor = dreader[0].ToString().Trim();
@@ -886,7 +886,7 @@ namespace ReverseRatClient
 
         public int MaxValor(String ID, String Tabla, SqlCommand Comando, SqlConnection Conexion)
         {
-            // Función para obtener el valor maximo de un ID en una tabla
+            // Funciï¿½n para obtener el valor maximo de un ID en una tabla
             SqlDataReader dreader;
             int Valor = 0;
 
@@ -894,7 +894,7 @@ namespace ReverseRatClient
                 Conexion.Close();
 
             Conexion.Open();
-            Comando.CommandText = "Select max(" + ID + ") from " + Tabla;  // Máximo valor
+            Comando.CommandText = "Select max(" + ID + ") from " + Tabla;  // Mï¿½ximo valor
             dreader = Comando.ExecuteReader();
             if (dreader.Read() && dreader.IsDBNull(0) == false) // Comprueba que no sea nulo el valor
                 Valor = Convert.ToInt32(dreader[0].ToString(), 10);
@@ -916,7 +916,7 @@ namespace ReverseRatClient
                 Conexion.Close();
 
             Conexion.Open();
-            Comando.CommandText = "Select max(" + ID + ") from " + Tabla + Adicional;  // Máximo valor
+            Comando.CommandText = "Select max(" + ID + ") from " + Tabla + Adicional;  // Mï¿½ximo valor
             dreader = Comando.ExecuteReader();
             if (dreader.Read() && dreader.IsDBNull(0) == false) // Comprueba que no sea nulo el valor
                 Valor = Convert.ToInt32(dreader[0].ToString(), 10);
@@ -937,7 +937,7 @@ namespace ReverseRatClient
                 Conexion.Close();
 
             Conexion.Open();
-            Comando.CommandText = "Select count(" + ID + ") from " + Tabla;  // Máximo valor
+            Comando.CommandText = "Select count(" + ID + ") from " + Tabla;  // Mï¿½ximo valor
             dreader = Comando.ExecuteReader();
             if (dreader.Read() && dreader.IsDBNull(0) == false) // Comprueba que no sea nulo el valor
                 Valor = Convert.ToInt32(dreader[0].ToString(), 10);
@@ -969,7 +969,7 @@ namespace ReverseRatClient
 
 
         public void EntradaTels(TextBox Txt)
-        {    //    Restringe entradas de teléfonos en campos textbox
+        {    //    Restringe entradas de telï¿½fonos en campos textbox
             Int16 x;
             for (x = 0; x < Txt.Text.Length; x++)
             {
@@ -984,7 +984,7 @@ namespace ReverseRatClient
 
 
         public void EntradaNums(TextBox Txt)
-        {    //   Restringe entradas numéricas en campos textbox
+        {    //   Restringe entradas numï¿½ricas en campos textbox
             Int16 x;
             for (x = 0; x < Txt.Text.Length; x++)
             {
@@ -998,7 +998,7 @@ namespace ReverseRatClient
         }
 
         public void EntradaNumsCS(TextBox Txt)
-        {    //   Restringe entradas numéricas con SIGNO en campos textbox
+        {    //   Restringe entradas numï¿½ricas con SIGNO en campos textbox
             Int16 x;
             for (x = 0; x < Txt.Text.Length; x++)
             {
@@ -1012,7 +1012,7 @@ namespace ReverseRatClient
         }
 
         public void EntradaNumsI(TextBox Txt)
-        {    //  Restringe entradas numéricas enteras en campos textbox
+        {    //  Restringe entradas numï¿½ricas enteras en campos textbox
             Int16 x;
             for (x = 0; x < Txt.Text.Length; x++)
             {
@@ -1189,7 +1189,7 @@ namespace ReverseRatClient
             rk.SetValue(key, setting);
         }
 
-        // Obtener preferencias de aplicación del registro
+        // Obtener preferencias de aplicaciï¿½n del registro
         public string GetSetting(string appName, string section, string key)
         {
             return GetSetting(appName, section, key, "");
@@ -1215,7 +1215,7 @@ namespace ReverseRatClient
     {
         private string[] sUnidades = {"", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", 
 									"once", "doce", "trece", "catorce", "quince", "dieciseis", "diecisiete", "dieciocho", "diecinueve", "veinte", 
-									"veintiún", "veintidos", "veintitres", "veinticuatro", "veinticinco", "veintiseis", "veintisiete", "veintiocho", "veintinueve"};
+									"veintiï¿½n", "veintidos", "veintitres", "veinticuatro", "veinticinco", "veintiseis", "veintisiete", "veintiocho", "veintinueve"};
         private string[] sDecenas  = { "", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa" };
         private string[] sCentenas = { "", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos" };
 
@@ -1266,7 +1266,7 @@ namespace ReverseRatClient
             sResultado += Numeros(dNumAux, 1);
 
 
-            //Enseguida verificamos si contiene punto, si es así, los convertimos a texto.
+            //Enseguida verificamos si contiene punto, si es asï¿½, los convertimos a texto.
             sAux = dNumero.ToString();
 
             if (sAux.IndexOf(".") >= 0)
@@ -1275,7 +1275,7 @@ namespace ReverseRatClient
                 Adicional = false;
             }
 
-            //Las siguientes líneas convierten el primer caracter a mayúscula.
+            //Las siguientes lï¿½neas convierten el primer caracter a mayï¿½scula.
             sAux = sResultado;
             x = char.ToUpper(sResultado[1]);
             sResultado = x.ToString();
@@ -1326,7 +1326,7 @@ namespace ReverseRatClient
             sResultado += Numeros(dNumAux, 1);
 
 
-            //Enseguida verificamos si contiene punto, si es así, los convertimos a texto.
+            //Enseguida verificamos si contiene punto, si es asï¿½, los convertimos a texto.
             sAux = dNumero.ToString();
 
             if (sAux.IndexOf(".") >= 0)
@@ -1335,7 +1335,7 @@ namespace ReverseRatClient
                 Adicional = false;
             }
 
-            //Las siguientes líneas convierten el primer caracter a mayúscula.
+            //Las siguientes lï¿½neas convierten el primer caracter a mayï¿½scula.
             sAux = sResultado;
             x = char.ToUpper(sResultado[1]);
             sResultado = x.ToString();
